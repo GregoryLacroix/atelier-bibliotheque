@@ -1,6 +1,29 @@
 <?php
 require_once('include/_init.php');
 
+if(isset($_GET['action']) && $_GET['action'] === 'delete'){
+    if (isset($_GET['id']) && !empty($_GET['id'])) {
+        $id = $_GET['id'];
+
+        // On selectionne tout dans la table emprunt en fonction de l'id de l'abonne dans l'url, celui que l'on souhaite supprimé
+        $data = $connect_db->prepare("SELECT * FROM emprunt WHERE abonne_id = :abonne_id");
+        $data->bindValue(':abonne_id', $id, PDO::PARAM_INT);
+        $data->execute();
+
+        // Si le requete de sélection ne retourne aucun résultat, cela veut dire que l'abonné n'a aucun emprunt, alors on peut le supprimé
+        if(!$data->rowCount()){
+            $data = $connect_db->prepare("DELETE FROM abonne WHERE id_abonne = :id_abonne");
+            $data->bindValue(':id_abonne', $id, PDO::PARAM_INT);
+            $data->execute();
+
+            $messageValidation = "L'abonné a été supprimé";
+        }else{
+            // Sinon l'abonné a des emprunts dans la bibliothèque, on affiche un message d'erreur
+            $errorDeleteMessage = "Impossible de supprimer l'abonné. Des emprunts y sont associés";
+        }
+    }
+}
+
 if (isset($_GET['action']) && $_GET['action'] === 'update') {
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = $_GET['id'];
@@ -54,6 +77,7 @@ require_once('include/_header.php');
 <h1 class="text-center my-4">Bibliothèque | Abonnés</h1>
 
 <p class="text-center text-success fw-bold"><?php if (isset($messageValidation)) echo $messageValidation;  ?></p>
+<p class="text-center text-danger fw-bold"><?php if (isset($errorDeleteMessage)) echo $errorDeleteMessage;  ?></p>
 
 <div class="col-md-6 mx-auto">
     <table class="table table-bordered mb-5 align-middle">
