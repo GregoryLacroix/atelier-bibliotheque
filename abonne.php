@@ -1,7 +1,7 @@
 <?php
 require_once('include/_init.php');
 
-if(isset($_GET['action']) && $_GET['action'] === 'delete'){
+if (isset($_GET['action']) && $_GET['action'] === 'delete') {
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = $_GET['id'];
 
@@ -11,16 +11,19 @@ if(isset($_GET['action']) && $_GET['action'] === 'delete'){
         $data->execute();
 
         // Si le requete de sélection ne retourne aucun résultat, cela veut dire que l'abonné n'a aucun emprunt, alors on peut le supprimé
-        if(!$data->rowCount()){
+        if (!$data->rowCount()) {
             $data = $connect_db->prepare("DELETE FROM abonne WHERE id_abonne = :id_abonne");
             $data->bindValue(':id_abonne', $id, PDO::PARAM_INT);
             $data->execute();
 
-            $messageValidation = "L'abonné a été supprimé";
-        }else{
+            $_SESSION['messageValidation'] = "L'abonné a été supprimé";
+        } else {
             // Sinon l'abonné a des emprunts dans la bibliothèque, on affiche un message d'erreur
-            $errorDeleteMessage = "Impossible de supprimer l'abonné. Des emprunts y sont associés";
+            $_SESSION['errorDeleteMessage'] = "Impossible de supprimer l'abonné. Des emprunts y sont associés";
         }
+
+        header('location: abonne.php');
+        exit;
     }
 }
 
@@ -49,8 +52,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'update') {
             $pdoStatement->bindValue(':id_abonne', $id, PDO::PARAM_INT);
             $pdoStatement->execute();
 
-            $messageValidation = "L'abonné a été modifié";
-            $arrayUpdateAbonne['prenom'] = '';
+            $_SESSION['messageValidation'] = "L'abonné a été modifié";
+
+            header('location: abonne.php');
+            exit;
         }
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -63,7 +68,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'update') {
         $pdoStatement->bindValue(':prenom', $prenom, PDO::PARAM_STR);
         $pdoStatement->execute();
 
-        $messageValidation = "L'abonné a été enregistré";
+        $_SESSION['messageValidation'] = "L'abonné a été enregistré";
+
+        header('location: abonne.php');
+        exit;
     } else {
         $message = "Merci de saisir un prénom";
     }
@@ -76,8 +84,17 @@ require_once('include/_header.php');
 ?>
 <h1 class="text-center my-4">Bibliothèque | Abonnés</h1>
 
-<p class="text-center text-success fw-bold"><?php if (isset($messageValidation)) echo $messageValidation;  ?></p>
-<p class="text-center text-danger fw-bold"><?php if (isset($errorDeleteMessage)) echo $errorDeleteMessage;  ?></p>
+<p class="text-center text-success fw-bold">
+    <?php
+    if (isset($_SESSION['messageValidation'])) echo $_SESSION['messageValidation'];
+    unset($_SESSION['messageValidation']); ?>
+</p>
+
+<p class="text-center text-danger fw-bold">
+    <?php
+    if (isset($_SESSION['errorDeleteMessage'])) echo $_SESSION['errorDeleteMessage'];
+    unset($_SESSION['errorDeleteMessage']); ?>
+</p>
 
 <div class="col-md-6 mx-auto">
     <table class="table table-bordered mb-5 align-middle">
