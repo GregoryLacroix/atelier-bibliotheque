@@ -97,23 +97,27 @@ require_once('include/_header.php');
 </p>
 
 <div class="col-md-6 mx-auto">
-    <table class="table table-bordered mb-5 align-middle">
-        <tr>
-            <th>Prénom</th>
-            <th class="text-end">Actions</th>
-        </tr>
-        <?php foreach ($data as $array): ?>
+    <table class="table table-bordered mb-5 align-middle" id="table-bibliotheque">
+        <thead>
             <tr>
-                <td><?= $array['prenom'] ?></td>
-                <td class="text-end">
-                    <a href="?action=update&id=<?= $array['id_abonne'] ?>" class="btn btn-primary">Modifier</a>
-                    <a href="?action=delete&id=<?= $array['id_abonne'] ?>" class="btn btn-danger">Supprimer</a>
-                </td>
+                <th>Prénom</th>
+                <th class="text-end">Actions</th>
             </tr>
-        <?php endforeach; ?>
+        </thead>
+        <tbody>
+            <?php foreach ($data as $array): ?>
+                <tr>
+                    <td><?= $array['prenom'] ?></td>
+                    <td class="text-end">
+                        <a href="?action=update&id=<?= $array['id_abonne'] ?>" class="btn btn-primary">Modifier</a>
+                        <a href="?action=delete&id=<?= $array['id_abonne'] ?>" class="btn btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
     </table>
 
-    <form action="" method="post">
+    <form action="" method="post" class="mt-5">
         <div class="mb-3">
             <label for="prenom" class="form-label">Prénom</label>
 

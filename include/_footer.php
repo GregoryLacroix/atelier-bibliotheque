@@ -5,7 +5,7 @@
     <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.js"></script>
 
     <script>
-        new DataTable('#table-emprunt', {
+        new DataTable('#table-bibliotheque', {
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/2.3.5/i18n/fr-FR.json',
             },

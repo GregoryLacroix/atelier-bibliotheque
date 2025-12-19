@@ -139,7 +139,7 @@ require_once('include/_header.php');
 </p>
 
 <div class="mx-auto">
-    <table class="table table-bordered mb-5 align-middle" id="table-emprunt">
+    <table class="table table-bordered mb-5 align-middle" id="table-bibliotheque">
         <thead>
             <tr>
                 <th>N° emprunt</th>

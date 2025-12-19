@@ -109,7 +109,7 @@ require_once('include/_header.php');
 </p>
 
 <div class="col-md-8 mx-auto">
-    <table class="table table-bordered mb-5 align-middle">
+    <table class="table table-bordered mb-5 align-middle" id="table-bibliotheque">
         <thead>
             <tr>
                 <th>Auteur</th>
@@ -131,7 +131,7 @@ require_once('include/_header.php');
         </tbody>
     </table>
 
-    <form action="" method="post">
+    <form action="" method="post" class="mt-5">
         <div class="mb-3">
             <label for="auteur" class="form-label">Auteur</label>
             <input type="text" class="form-control <?php if (isset($msgErrorAuteur)) echo $borderDanger; ?>" id="auteur" name="auteur" placeholder="Saisir un auteur" value="<?php if (isset($arrayUpdateLivre['auteur'])) echo $arrayUpdateLivre['auteur']; ?>">
