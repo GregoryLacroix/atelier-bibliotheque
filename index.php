@@ -24,9 +24,9 @@ $dataSelectFormAbonne = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 $pdoStatement = $connect_db->query("SELECT * FROM livre");
 $dataSelectFormLivre = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 
-echo '<pre>';
-print_r($_POST);
-echo '</pre>';
+// echo '<pre>';
+// print_r($_POST);
+// echo '</pre>';
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $borderDanger = "border border-danger";
@@ -45,14 +45,43 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $error = true;
         $msgErrorIdLivre = "Merci de sélectionner un livre";
     }
+
+    if(empty($dateSortie)){
+        $error = true;
+        $msgErrorDateSortie = "Merci de saisir une date";
+    }
+
+    if(empty($dateRendu)){
+        $dateRendu = null;
+    }
+
+    if(!isset($error)){
+        $pdoStatement = $connect_db->prepare("INSERT INTO emprunt (abonne_id, livre_id, date_sortie, date_rendu) VALUE (:abonne_id, :livre_id, :date_sortie, :date_rendu)");
+        $pdoStatement->bindValue(':abonne_id', $idAbonne, PDO::PARAM_INT);
+        $pdoStatement->bindValue(':livre_id', $idLivre, PDO::PARAM_INT);
+        $pdoStatement->bindValue(':date_sortie', $dateSortie, PDO::PARAM_STR);
+        $pdoStatement->bindValue(':date_rendu', $dateRendu, PDO::PARAM_STR);
+        $pdoStatement->execute();
+
+        $_SESSION['msgValidateAddEmprunt'] = "L'emprunt a été enregistré";
+
+        header('location: index.php');
+        exit;
+    }
 }
 
 require_once('include/_header.php');
 ?>
 <h1 class="text-center my-4">Bibliothèque | Emprunts</h1>
 
+<p class="text-center text-success fw-bold">
+    <?php
+    if (isset($_SESSION['msgValidateAddEmprunt'])) echo $_SESSION['msgValidateAddEmprunt'];
+    unset($_SESSION['msgValidateAddEmprunt']); ?>
+</p>
+
 <div class="mx-auto">
-    <table class="table table-bordered mb-5 align-middle">
+    <table class="table table-bordered mb-5 align-middle" id="table-emprunt">
         <thead>
             <tr>
                 <th>N° emprunt</th>
@@ -82,7 +111,7 @@ require_once('include/_header.php');
                 endif
                 ?>
                 </td>
-                <td class="text-end">
+                <td class="d-flex gap-2">
                     <a href="?action=update&id=<?= $array['id_emprunt'] ?>" class="btn btn-primary">Modifier</a>
                     <a href="?action=delete&id=<?= $array['id_emprunt'] ?>" class="btn btn-danger">Supprimer</a>
                 </td>
@@ -91,7 +120,7 @@ require_once('include/_header.php');
         </tbody>
     </table>
 
-    <form action="" method="post">
+    <form action="" method="post" class="mt-5">
         <div class="mb-3">
             <!-- <label for="abonne" class="form-label">Séléctionner un abonné</label> -->
             <select class="form-select <?php if(isset($msgErrorIdAbonne)) echo $borderDanger ?>" id="abonne" name="abonne">
@@ -114,7 +143,8 @@ require_once('include/_header.php');
         </div>
         <div class="mb-3">
             <label for="date_sortie" class="form-label">Date sortie</label>
-            <input type="date" class="form-control" id="date_sortie" name="date_sortie">
+            <input type="date" class="form-control <?php if(isset($msgErrorDateSortie)) echo $borderDanger ?>" id="date_sortie" name="date_sortie">
+            <small class="text-danger"><?php if(isset($msgErrorDateSortie)) echo $msgErrorDateSortie ?></small>
         </div>
         <div class="mb-3">
             <label for="date_rendu" class="form-label">Date retour</label>
